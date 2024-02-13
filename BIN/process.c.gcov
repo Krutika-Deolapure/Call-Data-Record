@@ -1,0 +1,68 @@
+        -:    0:Source:../SRC/process.c
+        -:    0:Programs:0
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <string.h>
+        -:    4:#include "../HDR/CDR_header.h"
+        -:    5:
+        -:    6://#define MAX 100
+        -:    7:
+    #####:    8:cdr_record *process_cdr()
+        -:    9:{
+    #####:   10:	 logmessage(LOG_LEVEL_INFO,"Processing CDR file...");
+    #####:   11:         n = 0;
+        -:   12:	 FILE *fp;
+    #####:   13:         fp = fopen("../DATA/data.cdr", "r"); 
+    #####:   14:         cdr_record *usr = NULL;
+        -:   15:         char record[9][MAX_LENGTH];
+    #####:   16:         char line[MAX_LENGTH]={0};
+    #####:   17:         int i = 0;
+        -:   18:         
+    #####:   19:         if(fp == NULL)
+        -:   20:         {
+    #####:   21:                 logmessage(LOG_LEVEL_FATAL,"Failed to open CDR file for     processing.");
+    #####:   22:                 printf("\n\nPlease try Later");
+    #####:   23:                 return NULL;
+        -:   24:         }
+        -:   25:         else
+        -:   26:         {
+    #####:   27:                 while(fgets(line,MAX_LENGTH,fp)!=NULL)
+        -:   28:                 {
+    #####:   29:                         char *token = strtok(line,"|");
+        -:   30:                        // strcpy(record[0], token);
+    #####:   31:                          while(token != NULL)
+        -:   32:                         {
+    #####:   33:                                 if(i ==7 && strcmp(record[3],"GPRS")==0)
+        -:   34:                                 {
+    #####:   35:                                         strcpy(record[i]," ");
+    #####:   36:                                         i++;
+    #####:   37:                                         continue;
+        -:   38:                                 }
+    #####:   39:                                 strcpy(record[i],token);
+    #####:   40:                                 token = strtok(NULL, "|");
+    #####:   41:                                 i++;
+        -:   42:                         }
+        -:   43:
+    #####:   44:                         i = 0;
+    #####:   45:                         n++;
+        -:   46:                        // printf("%d ", n);
+    #####:   47:                         usr = realloc(usr, n*sizeof(cdr_record));
+        -:   48:
+    #####:   49:                         strcpy(usr[n-1].msisdn, record[0]);
+    #####:   50:                         strcpy(usr[n-1].opbrand, record[1]);
+    #####:   51:                         strcpy(usr[n-1].opmmc, record[2]);
+    #####:   52:                         strcpy(usr[n-1].calltype, record[3]);
+    #####:   53:                         strcpy(usr[n-1].dur, record[4]);
+    #####:   54:                         strcpy(usr[n-1].download, record[5]);
+    #####:   55:                         strcpy(usr[n-1].upload, record[6]);
+    #####:   56:                         strcpy(usr[n-1].thirdpartymsisdn, record[7]);
+    #####:   57:                         strcpy(usr[n-1].thirdpartyopbrand, record[8]);
+        -:   58:
+        -:   59:                 }
+        -:   60:        }
+        -:   61:
+    #####:   62:        fclose(fp);
+    #####:   63:        logmessage(LOG_LEVEL_INFO,"CDR file processed successfully.");
+    #####:   64: 	return usr;
+        -:   65:
+        -:   66:}

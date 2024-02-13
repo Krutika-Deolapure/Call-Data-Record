@@ -1,0 +1,103 @@
+        -:    0:Source:../SRC/login.c
+        -:    0:Programs:0
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <string.h>
+        -:    4:#include <unistd.h>
+        -:    5:#include "../HDR/CDR_header.h"
+        -:    6:
+        -:    7:void signUp();
+        -:    8:void logIn();
+        -:    9:int userAllowed(const char user_name[], const char password[]);
+        -:   10:
+        -:   11:
+    #####:   12:void signUp() {
+        -:   13:    char user_name[MAX_LENGTH];
+        -:   14:    char password[MAX_LENGTH];
+        -:   15:    char re_password[MAX_LENGTH];
+        -:   16:
+    #####:   17:    logmessage(LOG_LEVEL_INFO,"*****SIGNUP*****");
+        -:   18:
+        -:   19:
+    #####:   20:    printf("\n\n*****SIGNUP*****\n");
+    #####:   21:    printf("Enter user ID: ");
+    #####:   22:    scanf("%s", user_name);
+    #####:   23:    printf("Enter the password: ");
+    #####:   24:    scanf("%s", password);
+    #####:   25:    printf("Re-enter the password: ");
+    #####:   26:    scanf("%s", re_password);
+        -:   27:
+    #####:   28:    if (strcmp(password, re_password) == 0) {
+    #####:   29:        if (userAllowed(user_name, password)) {
+    #####:   30:            logmessage(LOG_LEVEL_WARNING,"User already exists!");
+        -:   31:            //printf("\nUser already exists!\n");
+    #####:   32:            logIn();
+        -:   33:        } else {
+    #####:   34:            FILE *fp = fopen("../DATA/users.txt", "a+");
+    #####:   35:            if (fp == NULL) {
+    #####:   36:                 logmessage(LOG_LEVEL_FATAL,"Failed to open user details file for writing.");
+        -:   37:                //printf("\nFailed to open user details file for writing.\n");
+    #####:   38:                exit(EXIT_FAILURE);
+        -:   39:            }
+        -:   40:
+    #####:   41:            fprintf(fp, "%s %s\n", user_name, password);
+    #####:   42:            fclose(fp);
+        -:   43:
+    #####:   44:            logmessage(LOG_LEVEL_INFO,"Registration successful");
+        -:   45:            //printf("\nRegistration successful\n");
+    #####:   46:            logIn();  // Call logIn function after successful signup
+        -:   47:        }
+        -:   48:    } else {
+    #####:   49:        logmessage(LOG_LEVEL_WARNING,"Password mismatch");
+        -:   50:        //printf("Password mismatch\n");
+        -:   51:    }
+    #####:   52:}
+        -:   53:
+    #####:   54:void logIn() {
+        -:   55:    char user_name[MAX_LENGTH];
+        -:   56:    char password[MAX_LENGTH];
+        -:   57:
+    #####:   58:    logmessage(LOG_LEVEL_INFO,"******LOGIN******");
+        -:   59:    //printf("\n\n******LOGIN******\n");
+    #####:   60:    printf("Enter user ID: ");
+    #####:   61:    scanf("%s", user_name);
+        -:   62:
+    #####:   63:    printf("Enter the password: ");
+    #####:   64:    scanf("%s", password);
+        -:   65:
+    #####:   66:    if (userAllowed(user_name, password)) {
+    #####:   67:        logmessage(LOG_LEVEL_INFO,"Login Successful");
+        -:   68:        //printf("\nLogin Successful\n");
+    #####:   69:        mainMenu();
+        -:   70:    } else {
+    #####:   71:        logmessage(LOG_LEVEL_WARNING,"Authentication Failed");
+        -:   72:        //printf("\nAuthentication Failed\n");
+        -:   73:    }
+    #####:   74:}
+        -:   75:
+    #####:   76:int userAllowed(const char user_name[], const char password[]) {
+        -:   77:    char exist_username[MAX_LENGTH];
+        -:   78:    char exist_password[MAX_LENGTH];
+        -:   79:
+    #####:   80:    FILE *fp = fopen("../DATA/users.txt", "r");
+    #####:   81:    if (fp == NULL) {
+    #####:   82:        logmessage(LOG_LEVEL_FATAL,"Failed to open user details file.");
+        -:   83:        //printf("\n\nFailed to open user details file.\n");
+    #####:   84:        exit(EXIT_FAILURE);
+        -:   85:    }
+        -:   86:
+    #####:   87:    while (fscanf(fp, "%s %s\n", exist_username, exist_password) == 2) {
+    #####:   88:        if (strcmp(user_name, exist_username) == 0 && strcmp(password, exist_password) == 0) {
+    #####:   89:            fclose(fp);
+    #####:   90:            return 1;
+        -:   91:        }
+        -:   92:    }
+        -:   93:
+    #####:   94:    fclose(fp);
+    #####:   95:    return 0;
+        -:   96:}
+        -:   97:       
+        -:   98:
+        -:   99:
+        -:  100:   
+        -:  101:       

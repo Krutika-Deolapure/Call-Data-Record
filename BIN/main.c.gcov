@@ -1,0 +1,125 @@
+        -:    0:Source:../SRC/main.c
+        -:    0:Programs:0
+        -:    1:#include "../HDR/CDR_header.h"
+        -:    2:#include <stdio.h>
+        -:    3:#include <stdlib.h>
+        -:    4:#include <string.h>
+        -:    5:
+        -:    6:
+    #####:    7:void logmessage(int level, const char *format, ...){
+        -:    8:            va_list args;
+    #####:    9:            va_start(args, format);
+    #####:   10:            if (level <= LOG_LEVEL_DEBUG) {
+    #####:   11:                 printf("[%d]", level);
+    #####:   12:                 vprintf(format, args);
+    #####:   13:                 printf("\n");
+        -:   14:          }
+    #####:   15:          va_end(args);
+    #####:   16: }
+        -:   17:
+        -:   18:
+    #####:   19:int main(){
+    #####:   20:        logmessage(LOG_LEVEL_INFO,"Starting CDR Processing System...");
+    #####:   21:	while(1){
+        -:   22:	int op;
+    #####:   23:	printf("\n*** CDR Processing System *** \n");
+    #####:   24:	printf("1. Login \n2. Sign Up \n3. Exit");
+    #####:   25:	printf("\nEnter choice: ");	
+    #####:   26:	scanf("%d", &op);
+        -:   27:	
+    #####:   28:	switch(op){
+    #####:   29:		case 1: {
+    #####:   30:			logIn();
+    #####:   31:			} break;
+        -:   32:		
+    #####:   33:		case 2: {
+    #####:   34:			signUp();
+    #####:   35:			} break;
+        -:   36:
+    #####:   37:		case 3: {
+    #####:   38:                        logmessage(LOG_LEVEL_INFO,"Exited");
+    #####:   39:			exit(1);
+        -:   40:			}break;
+        -:   41:		
+    #####:   42:		default: 
+    #####:   43:                         logmessage(LOG_LEVEL_WARNING,"Invalid choice.");
+        -:   44:                        //printf("Invalid choice. \n");
+        -:   45:	}
+        -:   46:}
+        -:   47:	return 0;
+        -:   48:}
+        -:   49:
+    #####:   50:void mainMenu(){
+    #####:   51:        logmessage(LOG_LEVEL_INFO,"Entering Main Menu...");
+    #####:   52:	cdr_record *data = NULL;
+        -:   53:
+    #####:   54:	while(1){
+        -:   55:	int op;
+    #####:   56:	printf("\n*** CDR Operations *** \n");
+    #####:   57:	printf("1. Process CDR File \n2. Print/Search Billing Information \n3. Logout");
+    #####:   58:	printf("\nEnter choice: ");
+    #####:   59:	scanf("%d", &op);
+        -:   60:
+    #####:   61:	switch(op){
+    #####:   62:		case 1: {
+    #####:   63:			if(data == NULL){
+    #####:   64:                                logmessage(LOG_LEVEL_INFO,"Processing CDR File...");
+    #####:   65:				cdr_record *tmp = process_cdr();
+    #####:   66:				data = tmp;
+    #####:   67:				if(data == NULL){
+    #####:   68:                                        logmessage(LOG_LEVEL_WARNING,"Processing Failed.");
+        -:   69:					//printf("\nProcessing Failed. \n");
+        -:   70:				}
+        -:   71:				else{
+    #####:   72:                                        logmessage(LOG_LEVEL_INFO,"File Processed Successfully.");
+        -:   73:					//printf("\n File Processed. \n ");
+        -:   74:				}
+        -:   75:			}
+        -:   76:			else{
+    #####:   77:                                logmessage(LOG_LEVEL_WARNING,"File already processed.");
+        -:   78:				//printf("File already processed. \n");
+        -:   79:			}
+        -:   80:		}
+    #####:   81:		break;
+        -:   82:
+    #####:   83:		case 2: {
+    #####:   84:                        logmessage(LOG_LEVEL_INFO,"Entering Billing Menu...");
+    #####:   85:			billingMenu(data);
+    #####:   86:		} break;
+        -:   87:
+    #####:   88:		case 3: {
+    #####:   89:                        logmessage(LOG_LEVEL_INFO,"Logging out...");
+    #####:   90:			free(data);
+    #####:   91:			return;
+        -:   92:		}
+    #####:   93:		default: 
+    #####:   94:                        logmessage(LOG_LEVEL_WARNING,"Invalid Choice.");
+        -:   95:                        //printf("Invalid Choice. \n");
+        -:   96:	}
+        -:   97:	}
+        -:   98:        logmessage(LOG_LEVEL_INFO,"Exiting Main Menu...");
+        -:   99:	return;
+        -:  100:}
+        -:  101:
+    #####:  102:void billingMenu(cdr_record *data){
+        -:  103:	int op;
+    #####:  104:	printf("\n*** Billing Menu *** \n");
+    #####:  105:	printf("1. Customer Billing \n2. Inter-Operator Billing \n3. Leave \n");
+    #####:  106:	printf("Enter choice: ");
+    #####:  107:	scanf("%d", &op);
+        -:  108:
+    #####:  109:	switch(op){
+    #####:  110:		case 1: {
+    #####:  111:                        logmessage(LOG_LEVEL_INFO,"Customer Billing Operation...");
+    #####:  112:			Find_CustInfo(data);
+    #####:  113:                	Store_CustInfo(data);      
+    #####:  114:		} break;
+        -:  115:
+    #####:  116:		case 2: {
+    #####:  117:                        logmessage(LOG_LEVEL_INFO,"Inter-Operator Billin Operation...");
+    #####:  118:			interOperatorBillingFile(data);	
+        -:  119:		}
+    #####:  120:		break;
+        -:  121:	}
+        -:  122:
+    #####:  123:}
